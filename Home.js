@@ -6,6 +6,7 @@ import { MoveFinger } from "./systems"
 import Images from './Images';
 import Cat from './Cat'
 import Matter from 'matter-js';
+import Constants from './Constants';
 
 
 export default class Home extends PureComponent {
