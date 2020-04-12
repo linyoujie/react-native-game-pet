@@ -1,126 +1,58 @@
+import React, { Component } from 'react';
+import { StatusBar } from 'react-native';
 
-import * as React from 'react';
-import { Button, Text, View } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Home from './Home'
-function DetailsScreen() {
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Details!</Text>
-      
-    </View>
-  );
-}
+import { Provider } from 'react-redux';
+import * as storage from 'redux-storage';
+import { createStore, applyMiddleware } from 'redux';
+import ReduxThunk from 'redux-thunk';
+import createEngine from 'redux-storage-engine-localstorage';
+import debounce from 'redux-storage-decorator-debounce'
+import reducers from './reducers';
+import Router from './Router';
+import { Spinner } from './common';
+//import {UPDATE_STEP_COUNT} from './actions';
 
-function HomeScreen({ navigation }) {
-  return (
-        <Home />
-      
-  );
-}
+class App extends Component {
 
-function ShopScreen({ navigation }) {
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Home screen</Text>
-      <Button
-        title="Go to Details"
-        onPress={() => navigation.navigate('Details')}
-      />
-      
-    </View>
-  );
-}
+  constructor(props){
+    super(props);
+    this.state = {
+      loaded: true
+    }
+    StatusBar.setHidden(true, 'slide');
 
-function BackpackScreen({ navigation }) {
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Backpack screen</Text>
-      <Button
-        title="Go to Details"
-        onPress={() => navigation.navigate('Details')}
-      />
-      
-    </View>
-  );
-}
 
-function SettingsScreen({ navigation }) {
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Settings screen</Text>
-      <Button
-        title="Go to Details"
-        onPress={() => navigation.navigate('Details')}
-      />
-    </View>
-  );
-}
+    const reducer = storage.reducer(reducers);
+    const eng = createEngine('cagif-save-key');
+    const engine = debounce(eng, 1500);
+    const middleware = storage.createMiddleware(engine/*,[UPDATE_STEP_COUNT]*/);
+    const createStoreWithMiddleware = applyMiddleware(middleware,ReduxThunk)(createStore);
+    this.store = createStoreWithMiddleware(reducer);
 
-const HomeStack = createStackNavigator();
+    const load = storage.createLoader(engine);
+    load(this.store)
+      .then((newState) => this.setState({loaded: true}))
+      .catch(() => console.log('Error loading state from async storage'))
 
-function HomeStackScreen() {
-  return (
-    <HomeStack.Navigator>
-      <HomeStack.Screen name="Home" component={HomeScreen} />
-      <HomeStack.Screen name="Details" component={DetailsScreen} />
+  }
 
-    </HomeStack.Navigator>
-  );
-}
+  render() {
+    if(this.state.loaded){
+      return (
+        <Provider store={this.store}>
+          <Router />
+        </Provider>
+      );
+    } else {
+      return (
+        <Spinner />
+      );
+    }
 
-const SettingsStack = createStackNavigator();
+  }
 
-function SettingsStackScreen() {
-  return (
-    <SettingsStack.Navigator>
-      <SettingsStack.Screen name="Settings" component={SettingsScreen} />
-      <SettingsStack.Screen name="Details" component={DetailsScreen} />
 
-    </SettingsStack.Navigator>
-  );
 }
 
 
-
-const ShopStack = createStackNavigator();
-
-function ShopStackScreen() {
-  return (
-    <ShopStack.Navigator>
-      <ShopStack.Screen name="Shop" component={ShopScreen} />
-      <ShopStack.Screen name="Details" component={DetailsScreen} />
-
-    </ShopStack.Navigator>
-  );
-}
-
-const BackpackStack = createStackNavigator();
-
-function BackpackStackScreen() {
-  return (
-    <BackpackStack.Navigator>
-      <BackpackStack.Screen name="Backpack" component={BackpackScreen} />
-      <BackpackStack.Screen name="Details" component={DetailsScreen} />
-
-    </BackpackStack.Navigator>
-  );
-}
-
-const Tab = createBottomTabNavigator();
-
-export default function App() {
-  return (
-    <NavigationContainer>
-      <Tab.Navigator>
-        <Tab.Screen name="Home" component={HomeStackScreen} />
-        <Tab.Screen name="Backpack" component={BackpackStackScreen} />
-        <Tab.Screen name="Shop" component={ShopStackScreen} />
-        <Tab.Screen name="Settings" component={SettingsStackScreen} />
-
-      </Tab.Navigator>
-    </NavigationContainer>
-  );
-}
+export default App;

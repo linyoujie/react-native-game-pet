@@ -1,0 +1,66 @@
+{
+    "banana" : {
+      "price": 30,
+      "statsChanges": {
+        "health": 5,
+        "hunger": 10,
+        "mood": 3
+      }
+    },
+    "beet" : {
+      "price": 50,
+      "statsChanges": {
+        "health": 15,
+        "hunger": 10,
+        "mood": 5
+      }
+    },
+    "smoothie": {
+      "price": 50,
+      "statsChanges": {
+        "health": 10,
+        "hunger": 5,
+        "mood": 15
+      }
+    },
+    "zucchini_loaf": {
+      "price": 50,
+      "statsChanges": {
+        "health": 5,
+        "hunger": 15,
+        "mood": 10
+      }
+    },
+    "taco": {
+      "price": 80,
+      "statsChanges": {
+        "health": -10,
+        "hunger": 35,
+        "mood": 25
+      }
+    },
+    "chocolate_cake": {
+      "price": 80,
+      "statsChanges": {
+        "health": -20,
+        "hunger": 30,
+        "mood": 40
+      }
+    },
+    "veggie_kebab": {
+      "price": 80,
+      "statsChanges": {
+        "health": 35,
+        "hunger": 20,
+        "mood": -5
+      }
+    },
+    "salmon" : {
+      "price": 115,
+      "statsChanges": {
+        "health": 35,
+        "hunger": 20,
+        "mood": 20
+      }
+    }
+}
